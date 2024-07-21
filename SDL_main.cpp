@@ -57,6 +57,7 @@ int InitializedSDL(SDL_Window** window, SDL_Renderer** renderer, int width, int 
 
 void FinalizedSDL(SDL_Window** window, SDL_Renderer** renderer)
 {
+    printf("start finalized SDL\n");
     if (*window != NULL)
     {
         SDL_DestroyWindow(*window);
@@ -67,8 +68,9 @@ void FinalizedSDL(SDL_Window** window, SDL_Renderer** renderer)
         SDL_DestroyRenderer(*renderer);
         *renderer = NULL;
     }
-    
+    printf("end of finalized SDL\n");
     SDL_Quit();
+    printf("SDL_Quit\n");
 }
 
 int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height)
