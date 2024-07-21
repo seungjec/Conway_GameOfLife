@@ -1,0 +1,16 @@
+#pragma once
+
+#include <SDL.h>
+
+#define MAX_SIZE 1000
+
+void RunSDL();
+int InitializedSDL(SDL_Window** window, SDL_Renderer** renderer, int width, int height);
+void FinalizedSDL(SDL_Window** window, SDL_Renderer** renderer);
+int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height);
+
+void SetGridLine(SDL_Renderer** renderer, SDL_Point* XLinePoints, SDL_Point* YLinePoints, int window_w, int window_h, int grid_size);
+void UpdateCell(bool* Cells, int numXCells, int numYCells);
+bool CheckRule(bool* Cells, int xidx, int yidx, int width, int height);
+void SetCells(bool* Cells, int numXCells, int numYCells, int grid_size);
+void SetCellRects(SDL_Rect* CellRects, int numXCells, int numYCells, int grid_size);
