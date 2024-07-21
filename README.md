@@ -3,8 +3,9 @@
 ![img](doc/Conway_GameOfLife.png)
 
 [Usage]  
-- Mouse Left Button : Pause
-- Mouse Right Button : Add/Remove Cell
+- Keyboard Spacebar : Pause
+- Mouse Left Button : Add Cell
+- Mouse Right Button : Remove Cell
 
 [Reference]  
 https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life  
