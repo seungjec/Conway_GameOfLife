@@ -106,10 +106,13 @@ int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height)
     int numXPoints = (window_h / grid_size + 1) * 2;
     int numYPoints = (window_w / grid_size + 1) * 2;
 
-    SDL_Point* XLinePoints = (SDL_Point *)malloc(numXPoints * sizeof(SDL_Point));
+    SDL_Point* XLinePoints = (SDL_Point*)malloc(numXPoints * sizeof(SDL_Point));
     SDL_Point* YLinePoints = (SDL_Point*)malloc(numYPoints * sizeof(SDL_Point));
     if (XLinePoints == NULL || YLinePoints == NULL)
+    {
+        printf("SDL_Point malloc fail\n");
         return -1;
+    }
 
     SetGridLine(renderer, XLinePoints, YLinePoints, window_w, window_h, grid_size);
 
@@ -118,9 +121,16 @@ int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height)
     bool* Cells = (bool*)malloc(numXCells * numYCells * sizeof(bool));
     SDL_Rect* CellRects = (SDL_Rect*)malloc(numXCells * numYCells * sizeof(SDL_Rect));
     if (Cells == NULL || CellRects == NULL)
+    {
+        printf("SDL_Rect malloc fail\n");
         return -1;
+    }
 
-    SetCells(Cells, numXCells, numYCells, grid_size);
+    if (SetCells(Cells, numXCells, numYCells, grid_size) != true)
+    {
+        printf("SetCells fail\n");
+        return -1;
+    }
     SetCellRects(CellRects, numXCells, numYCells, grid_size);
 
     // Main Loop
@@ -180,26 +190,17 @@ int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height)
             }
             break;
         case SDL_MOUSEMOTION:
-            switch (event.button.button)
+            switch (event.motion.state)
             {
-            case SDL_BUTTON_LEFT:
+            case SDL_BUTTON_LMASK:
             {
                 int xidx = event.motion.x / grid_size;
                 int yidx = event.motion.y / grid_size;
                 Cells[xidx + numXCells * yidx] = true;
             }
                 break;
-            case SDL_BUTTON_RIGHT:
+            case SDL_BUTTON_RMASK:
             {
-                printf("SDL_BUTTON_RIGHT\n");
-                int xidx = event.motion.x / grid_size;
-                int yidx = event.motion.y / grid_size;
-                Cells[xidx + numXCells * yidx] = false;
-            }
-                break;
-            case SDL_BUTTON_X1:
-            {
-                printf("SDL_BUTTON_X1\n");
                 int xidx = event.motion.x / grid_size;
                 int yidx = event.motion.y / grid_size;
                 Cells[xidx + numXCells * yidx] = false;
@@ -216,7 +217,8 @@ int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height)
         // Update
         if (isUpdate)
         {
-            UpdateCell(Cells, numXCells, numYCells);
+            if (UpdateCell(Cells, numXCells, numYCells) != true)
+                return -1;
         }
 
         
@@ -261,6 +263,7 @@ int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height)
     if (CellRects != NULL)
         free(CellRects);
 
+    printf("End of Main Loop\n");
     return 0;
 }
 
@@ -302,14 +305,17 @@ void SetGridLine(SDL_Renderer** renderer, SDL_Point* XLinePoints, SDL_Point* YLi
     }
 }
 
-void UpdateCell(bool* Cells, int numXCells, int numYCells)
+bool UpdateCell(bool* Cells, int numXCells, int numYCells)
 {
     numXCells = std::max(std::min(numXCells, MAX_SIZE), 0);
     numYCells = std::max(std::min(numYCells, MAX_SIZE), 0);
 
     bool* tmpCells = (bool*)malloc(numXCells * numYCells * sizeof(bool));
     if (tmpCells == NULL)
-        return;
+    {
+        printf("UpdateCell fail\n");
+        return false;
+    }
 
     for (int yidx = 0; yidx < numYCells; yidx++)
     {
@@ -325,6 +331,8 @@ void UpdateCell(bool* Cells, int numXCells, int numYCells)
     {
         free(tmpCells);
     }
+
+    return true;
 }
 
 /*
@@ -368,21 +376,23 @@ bool CheckRule(bool* Cells, int xidx, int yidx, int width, int height)
     }
 }
 
-void SetCells(bool* Cells, int numXCells, int numYCells, int grid_size)
+bool SetCells(bool* Cells, int numXCells, int numYCells, int grid_size)
 {
-    memset(Cells, 0, numXCells * numYCells * sizeof(bool));
+    if (Cells != NULL)
+    {
+        memset(Cells, 0, numXCells * numYCells * sizeof(bool));
 
-    //Cells[xidx + numXCells * yidx];
-    Cells[41 + numXCells * 30] = true;
-    Cells[40 + numXCells * 31] = true;
-    Cells[41 + numXCells * 31] = true;
-    Cells[41 + numXCells * 32] = true;
-    Cells[42 + numXCells * 32] = true;
+        //Cells[xidx + numXCells * yidx];
+        Cells[41 + numXCells * 30] = true;
+        Cells[40 + numXCells * 31] = true;
+        Cells[41 + numXCells * 31] = true;
+        Cells[41 + numXCells * 32] = true;
+        Cells[42 + numXCells * 32] = true;
 
-    //for (int i = 0; i < 3; i++)
-    //{
-    //    Cells[1400 + i] = true;
-    //}
+        return true;
+    }
+    else
+        return false;
 }
 
 void SetCellRects(SDL_Rect* CellRects, int numXCells, int numYCells, int grid_size)
