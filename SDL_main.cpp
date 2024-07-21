@@ -81,6 +81,7 @@ int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height)
     Uint64 frameStart, aFrameTime;
 
     bool isRunning = true;
+    bool isUpdate = true;
 
     SDL_Surface* tmpSurface = NULL;
 
@@ -134,12 +135,37 @@ int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height)
         case SDL_QUIT:
             isRunning = false;
             break;
+        case SDL_MOUSEBUTTONDOWN:
+            switch (event.button.button)
+            {
+            case SDL_BUTTON_LEFT:
+                if (isUpdate)
+                    isUpdate = false;
+                else
+                    isUpdate = true;
+                break;
+            case SDL_BUTTON_RIGHT:
+                {
+                    int xidx = event.button.x / grid_size;
+                    int yidx = event.button.y / grid_size;
+                    if (Cells[xidx + numXCells * yidx])
+                        Cells[xidx + numXCells * yidx] = false;
+                    else
+                        Cells[xidx + numXCells * yidx] = true;
+                }
+                break;
+            default:
+                break;
+            }
         default:
             break;
         }
 
         // Update
-        UpdateCell(Cells, numXCells, numYCells);
+        if (isUpdate)
+        {
+            UpdateCell(Cells, numXCells, numYCells);
+        }
 
         
         // Render
@@ -162,7 +188,6 @@ int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height)
                 }
             }
         }
-        //SDL_RenderFillRects(*renderer, CellRects, numXCells * numYCells);
 
         SDL_RenderPresent(*renderer);
 
