@@ -136,10 +136,13 @@ int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height)
         case SDL_QUIT:
             isRunning = false;
             break;
-        case SDL_MOUSEBUTTONDOWN:
-            switch (event.button.button)
+        case SDL_KEYDOWN:
+            switch (event.key.keysym.sym)
             {
-            case SDL_BUTTON_LEFT:
+            case SDLK_ESCAPE:
+                isRunning = false;
+                break;
+            case SDLK_SPACE:
                 if (isUpdate)
                 {
                     isUpdate = false;
@@ -151,19 +154,61 @@ int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height)
                     GridColor = 230;
                 }
                 break;
+            default:
+                break;
+            }
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            switch (event.button.button)
+            {
+            case SDL_BUTTON_LEFT:
+            {
+                int xidx = event.button.x / grid_size;
+                int yidx = event.button.y / grid_size;
+                Cells[xidx + numXCells * yidx] = true;
+            }
+                break;
             case SDL_BUTTON_RIGHT:
-                {
-                    int xidx = event.button.x / grid_size;
-                    int yidx = event.button.y / grid_size;
-                    if (Cells[xidx + numXCells * yidx])
-                        Cells[xidx + numXCells * yidx] = false;
-                    else
-                        Cells[xidx + numXCells * yidx] = true;
-                }
+            {
+                int xidx = event.button.x / grid_size;
+                int yidx = event.button.y / grid_size;
+                Cells[xidx + numXCells * yidx] = false;
+            }
                 break;
             default:
                 break;
             }
+            break;
+        case SDL_MOUSEMOTION:
+            switch (event.button.button)
+            {
+            case SDL_BUTTON_LEFT:
+            {
+                int xidx = event.motion.x / grid_size;
+                int yidx = event.motion.y / grid_size;
+                Cells[xidx + numXCells * yidx] = true;
+            }
+                break;
+            case SDL_BUTTON_RIGHT:
+            {
+                printf("SDL_BUTTON_RIGHT\n");
+                int xidx = event.motion.x / grid_size;
+                int yidx = event.motion.y / grid_size;
+                Cells[xidx + numXCells * yidx] = false;
+            }
+                break;
+            case SDL_BUTTON_X1:
+            {
+                printf("SDL_BUTTON_X1\n");
+                int xidx = event.motion.x / grid_size;
+                int yidx = event.motion.y / grid_size;
+                Cells[xidx + numXCells * yidx] = false;
+            }
+                break;
+            default:
+                break;
+            }
+            break;
         default:
             break;
         }
@@ -184,15 +229,12 @@ int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height)
         SDL_RenderDrawLines(*renderer, YLinePoints, numYPoints);
 
         SDL_SetRenderDrawColor(*renderer, 100, 100, 100, 255);
-
         for (int yidx = 0; yidx < numYCells; yidx++)
         {
             for (int xidx = 0; xidx < numXCells; xidx++)
             {
                 if (Cells[xidx + numXCells * yidx])
-                {
                     SDL_RenderFillRect(*renderer, &CellRects[xidx + numXCells * yidx]);
-                }
             }
         }
 
