@@ -8,8 +8,8 @@ void RunSDL()
     SDL_Renderer* renderer = NULL;
     SDL_Event event{};
 
-    int window_w = 800;
-    int window_h = 600;
+    int window_w = WINDOW_W;
+    int window_h = WINDOW_H;
 
     auto err = InitializedSDL(&window, &renderer, window_w, window_h);
     if (err != 0)
@@ -38,7 +38,7 @@ int InitializedSDL(SDL_Window** window, SDL_Renderer** renderer, int width, int 
         "Conway's Game of Life",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        window_w, window_h, false);
+        window_w, window_h, FULL_SCREEN);
     if (*window == NULL)
     {
         printf("SDL_CreateWindow fail, Desc = %s", SDL_GetError());
@@ -75,33 +75,31 @@ int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height)
     int window_w = width;
     int window_h = height;
 
-    int FPS = 60;
-    Uint64 millisecond_per_frame = 1000 / FPS;
+    int frame_per_second = FPS;
+    Uint64 millisecond_per_frame = 1000 / frame_per_second;
     Uint64 frameStart, aFrameTime;
 
     bool isRunning = true;
     bool isUpdate = true;
-    int GridColor = 230;
+    int GridColor = GRID_COLOR;
 
     SDL_Surface* tmpSurface = NULL;
 
-    tmpSurface = SDL_CreateRGBSurface(0, 800, 400, 8, 0, 0, 0, 0);
+    tmpSurface = SDL_CreateRGBSurface(0, window_w, window_h, 8, 0, 0, 0, 0);
     if (tmpSurface == NULL)
     {
         printf("IMG_Load fail, Desc = %s", SDL_GetError());
         return -1;
     }
-
     SDL_Texture* texture = SDL_CreateTextureFromSurface(*renderer, tmpSurface);
     if (texture == NULL)
     {
         printf("SDL_CreateTextureFromSurface fail, Desc = %s", SDL_GetError());
         return -1;
     }
-
     SDL_FreeSurface(tmpSurface);
 
-    int grid_size = 10;
+    int grid_size = GRID_SIZE;
     int numXPoints = (window_h / grid_size + 1) * 2;
     int numYPoints = (window_w / grid_size + 1) * 2;
 
@@ -155,12 +153,12 @@ int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height)
                 if (isUpdate)
                 {
                     isUpdate = false;
-                    GridColor = 150;
+                    GridColor = PAUSE_COLOR;
                 }
                 else
                 {
                     isUpdate = true;
-                    GridColor = 230;
+                    GridColor = GRID_COLOR;
                 }
                 break;
             default:
@@ -219,7 +217,6 @@ int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height)
             if (UpdateCell(Cells, numXCells, numYCells) != true)
                 return -1;
         }
-
         
         // Render
         SDL_RenderClear(*renderer);
@@ -229,7 +226,7 @@ int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height)
         SDL_RenderDrawLines(*renderer, XLinePoints, numXPoints);
         SDL_RenderDrawLines(*renderer, YLinePoints, numYPoints);
 
-        SDL_SetRenderDrawColor(*renderer, 100, 100, 100, 255);
+        SDL_SetRenderDrawColor(*renderer, CELL_COLOR, CELL_COLOR, CELL_COLOR, 255);
         for (int yidx = 0; yidx < numYCells; yidx++)
         {
             for (int xidx = 0; xidx < numXCells; xidx++)
@@ -238,9 +235,7 @@ int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height)
                     SDL_RenderFillRect(*renderer, &CellRects[xidx + numXCells * yidx]);
             }
         }
-
         SDL_RenderPresent(*renderer);
-
 
         // FPS
         aFrameTime = SDL_GetTicks64() - frameStart;
@@ -267,7 +262,7 @@ int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height)
 
 void SetGridLine(SDL_Renderer** renderer, SDL_Point* XLinePoints, SDL_Point* YLinePoints, int window_w, int window_h, int grid_size)
 {
-    SDL_SetRenderDrawColor(*renderer, 230, 230, 230, 255);
+    SDL_SetRenderDrawColor(*renderer, GRID_COLOR, GRID_COLOR, GRID_COLOR, 255);
 
     int numXLines = window_h / grid_size + 1;
     int numYLines = window_w / grid_size + 1;
@@ -341,6 +336,7 @@ Any dead cell with exactly three live neighbours becomes a live cell, as if by r
 */
 bool CheckRule(bool* Cells, int xidx, int yidx, int width, int height)
 {
+    // Window Boundary Rule
     int xm = std::max(xidx - 1, 0);
     int x0 = xidx;
     int xp = std::min(xidx + 1, width - 1);
@@ -380,7 +376,8 @@ bool SetCells(bool* Cells, int numXCells, int numYCells, int grid_size)
     {
         memset(Cells, 0, numXCells * numYCells * sizeof(bool));
 
-        //Cells[xidx + numXCells * yidx];
+        // Initial Cells Position
+        // Cells[xidx + numXCells * yidx];
         Cells[41 + numXCells * 30] = true;
         Cells[40 + numXCells * 31] = true;
         Cells[41 + numXCells * 31] = true;

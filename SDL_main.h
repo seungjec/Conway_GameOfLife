@@ -3,6 +3,15 @@
 #include <SDL.h>
 
 #define MAX_SIZE 1000
+#define WINDOW_W 800
+#define WINDOW_H 600
+#define FULL_SCREEN 0
+#define FPS 60
+#define GRID_SIZE 10
+#define GRID_COLOR 230
+#define CELL_COLOR 100
+#define PAUSE_COLOR 150
+
 
 void RunSDL();
 int InitializedSDL(SDL_Window** window, SDL_Renderer** renderer, int width, int height);
