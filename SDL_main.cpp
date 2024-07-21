@@ -82,6 +82,7 @@ int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height)
 
     bool isRunning = true;
     bool isUpdate = true;
+    int GridColor = 230;
 
     SDL_Surface* tmpSurface = NULL;
 
@@ -140,9 +141,15 @@ int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height)
             {
             case SDL_BUTTON_LEFT:
                 if (isUpdate)
+                {
                     isUpdate = false;
+                    GridColor = 150;
+                }
                 else
+                {
                     isUpdate = true;
+                    GridColor = 230;
+                }
                 break;
             case SDL_BUTTON_RIGHT:
                 {
@@ -172,7 +179,7 @@ int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height)
         SDL_RenderClear(*renderer);
         SDL_RenderCopy(*renderer, texture, NULL, NULL);
 
-        SDL_SetRenderDrawColor(*renderer, 230, 230, 230, 255);
+        SDL_SetRenderDrawColor(*renderer, GridColor, GridColor, GridColor, 255);
         SDL_RenderDrawLines(*renderer, XLinePoints, numXPoints);
         SDL_RenderDrawLines(*renderer, YLinePoints, numYPoints);
 
