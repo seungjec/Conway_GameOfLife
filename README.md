@@ -3,9 +3,10 @@
 ![img](doc/Conway_GameOfLife.png)
 
 [Usage]  
-- Keyboard Spacebar : Pause  
 - Mouse Left Button : Add Cell  
 - Mouse Right Button : Remove Cell  
+- Keyboard Spacebar : Pause  
+- Keyboard Tab : Restart with random cell position
 - Keyboard ECS : Quit  
 
 [Reference]  

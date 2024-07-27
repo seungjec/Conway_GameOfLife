@@ -1,6 +1,7 @@
 #include "SDL_main.h"
 #include <stdio.h>
 #include <algorithm>
+#include <random>
 
 void RunSDL()
 {
@@ -160,6 +161,9 @@ int ExecuteSDL(SDL_Renderer** renderer, SDL_Event& event, int width, int height)
                     isUpdate = true;
                     GridColor = GRID_COLOR;
                 }
+                break;
+            case SDLK_TAB:
+                SetCells(Cells, numXCells, numYCells, grid_size);
                 break;
             default:
                 break;
@@ -376,13 +380,18 @@ bool SetCells(bool* Cells, int numXCells, int numYCells, int grid_size)
     {
         memset(Cells, 0, numXCells * numYCells * sizeof(bool));
 
-        // Initial Cells Position
-        // Cells[xidx + numXCells * yidx];
-        Cells[41 + numXCells * 30] = true;
-        Cells[40 + numXCells * 31] = true;
-        Cells[41 + numXCells * 31] = true;
-        Cells[41 + numXCells * 32] = true;
-        Cells[42 + numXCells * 32] = true;
+        // Initial Cells Position Randomly
+        std::random_device rd;
+        std::mt19937 mersenne(rd());
+        std::uniform_int_distribution<> coin(0, 1);
+
+        for (int xidx = 0; xidx < numXCells; xidx++)
+        {
+            for (int yidx = 0; yidx < numYCells; yidx++)
+            {
+                Cells[xidx + numXCells * yidx] = coin(mersenne);
+            }
+        }
 
         return true;
     }
