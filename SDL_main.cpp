@@ -304,9 +304,6 @@ void SetGridLine(SDL_Renderer** renderer, SDL_Point* XLinePoints, SDL_Point* YLi
 
 bool UpdateCell(bool* Cells, int numXCells, int numYCells)
 {
-    numXCells = std::max(std::min(numXCells, MAX_SIZE), 0);
-    numYCells = std::max(std::min(numYCells, MAX_SIZE), 0);
-
     bool* tmpCells = (bool*)malloc(numXCells * numYCells * sizeof(bool));
     if (tmpCells == NULL)
     {

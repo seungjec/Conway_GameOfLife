@@ -2,11 +2,10 @@
 
 #include <SDL.h>
 
-#define MAX_SIZE 1000
-#define WINDOW_W 800
-#define WINDOW_H 600
+#define WINDOW_W 1920*2
+#define WINDOW_H 1080*2
 #define FULL_SCREEN 0
-#define FPS 60
+#define FPS 100
 #define GRID_SIZE 10
 #define GRID_COLOR 230
 #define CELL_COLOR 100
